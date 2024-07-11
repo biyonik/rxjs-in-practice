@@ -9,7 +9,11 @@ export default function createHttpObservable<T>(url: string) {
       signal,
     })
       .then((response) => {
-        return response.json();
+        if (response.ok) {
+          return response.json();
+        } else {
+          observer.error('Request failed with status: ' + response.status);
+        }
       })
       .then((body) => {
         observer.next(body);
