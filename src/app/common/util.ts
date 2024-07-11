@@ -2,7 +2,12 @@ import { Observable } from "rxjs";
 
 export default function createHttpObservable<T>(url: string) {
   return new Observable<T>((observer) => {
-    fetch(url)
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    fetch(url, {
+      signal,
+    })
       .then((response) => {
         return response.json();
       })
@@ -13,5 +18,7 @@ export default function createHttpObservable<T>(url: string) {
       .catch((err) => {
         observer.error(err);
       });
+
+    return () => controller.abort();
   });
 }
